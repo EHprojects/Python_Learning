@@ -35,7 +35,7 @@ def print_report(money, avail_resources):
 
 def coin_insert(item_selection):
     """Takes the chosen item and prompts for coins to be inserted. The cost of the selected item is subtracted and
-    the appropriate amount of change is refunded. Returns the sale amount if transaction is successful, otherwise 0. """
+    the appropriate amount of change is refunded. Returns TRUE if enough money is inserted, otherwise FALSE."""
     print("Please insert coins.")
     quarters = int(input("how many quarters?: "))
     dimes = int(input("how many dimes?: "))
@@ -70,10 +70,6 @@ def check_resources(item_selection, avail_resources):
 def update_resources(item_selection, avail_resources):
     """Takes the item selection and current resources and returns the updated resources after the selected item
     has been made."""
-    # avail_resources["water"] = avail_resources["water"] - MENU[item_selection]["ingredients"]["water"]
-    # avail_resources["milk"] = avail_resources["milk"] - MENU[item_selection]["ingredients"]["milk"]
-    # avail_resources["coffee"] = avail_resources["coffee"] - MENU[item_selection]["ingredients"]["coffee"]
-
     for key in MENU[item_selection]["ingredients"]:
         avail_resources[key] = avail_resources[key] - MENU[item_selection]["ingredients"][key]
 
@@ -98,7 +94,7 @@ def coffee_machine():
         if selection == "report":
             print_report(cash_on_hand, resources)
         elif selection == "off":
-            return
+            machine_on = False
         elif selection == "espresso" or selection == "latte" or selection == "cappuccino":
             if check_resources(selection, resources):
                 if coin_insert(selection):
