@@ -10,8 +10,9 @@ screen.bgcolor("white")
 screen.title("Definitely Not Frogger")
 screen.tracer(0)
 
+scoreboard = Scoreboard()
 player = Player()
-cars = []
+car_manager = CarManager()
 
 screen.listen()
 screen.onkey(player.move, "Up")
@@ -23,14 +24,24 @@ while game_is_on:
     time.sleep(0.1)
     loop_pass += 1
 
+    car_manager.move_cars()
+
+    # add new cars
     if loop_pass % 6 == 0:
-        cars.append(CarManager())
+        car_manager.create_car()
         loop_pass = 0
 
-    for car_obj in cars:
-        car_obj.move()
+    for car in car_manager.all_cars:
+        if player.distance(car) < 30:
+            game_is_on = False
+            scoreboard.game_over()
+
+    # check if player has reached the other side
+    if player.ycor() > 280:
+        scoreboard.update_scoreboard()
+        car_manager.increase_speed()
+        player.reset_position()
 
     screen.update()
 
-
-
+screen.exitonclick()
