@@ -3,17 +3,17 @@ from tkinter import *
 
 def convert():
     # 1 mile = 1.60934 km
-    miles = int(miles_input.get())
+    miles = float(miles_input.get())
     result = miles * 1.60934
     lab_result.config(text=str(result))
 
 
 window = Tk()
 window.title("Mile to Km Converter")
-window.minsize(width=250, height=250)
-window.config(padx=100, pady=100)
+window.minsize(width=250, height=100)
+window.config(padx=20, pady=20)
 
-miles_input = Entry(width=10)
+miles_input = Entry(width=7)
 miles_input.insert(END, string="0")
 miles_input.grid(row=0, column=1)
 
