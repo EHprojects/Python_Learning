@@ -14,7 +14,9 @@ print(birthdays)
 # print(birthdays)
 # phonetic_dict = {row.letter: row.code for (index, row) in data.iterrows()}
 
-
+for (index, row) in birthdays.iterrows():
+    print(row.month)
+    print(row)
 
 # Pick Random Letter
 
