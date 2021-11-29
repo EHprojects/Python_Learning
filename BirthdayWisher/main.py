@@ -1,22 +1,32 @@
-import smtplib
-import datetime as dt
 import random
+import smtplib
+from datetime import datetime
 import pandas
 
+MY_EMAIL = "email address"
+MY_PASSWORD = "password"
 
-MY_EMAIL = "your@email.com"
-PASSWORD = "password"
 
-# Import Birthday Data
-birthdays = pandas.read_csv("birthdays.csv")
-print(birthdays)
-# birthdays = birthdays.to_dict(orient="series")
-# print(birthdays)
-# phonetic_dict = {row.letter: row.code for (index, row) in data.iterrows()}
+today = datetime.now()
+today_tuple = (today.month, today.day)
 
-for (index, row) in birthdays.iterrows():
-    print(row.month)
-    print(row)
+data = pandas.read_csv("birthdays.csv")
+# new_dict = {new_key: new_value for (index, data_row) in data.iterrows()}
+# iterrows() = Iterate over DataFrame rows as (index, Series) pairs
 
-# Pick Random Letter
+birthdays_dict = {(data_row["month"], data_row["day"]): data_row for (index, data_row) in data.iterrows()}
+
+if today_tuple in birthdays_dict:
+    birthday_person = birthdays_dict[today_tuple]
+    file_path = f"./letter_templates/letter_{random.randint(1,3)}.txt"
+    with open(file_path) as letter_file:
+        contents = letter_file.read()
+        contents = contents.replace("[NAME]", birthday_person["name"])
+
+    with smtplib.SMTP("smtp.gmail.com", port=587) as connection:
+        connection.starttls()
+        connection.login(MY_EMAIL, MY_PASSWORD)
+        connection.sendmail(from_addr=MY_EMAIL,
+                            to_addrs=birthday_person["email"],
+                            msg=f"Subject: Happy Birthday!\n\n{contents}")
 
