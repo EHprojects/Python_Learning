@@ -48,8 +48,7 @@ if will_rain:
     # client = Client(account_sid, auth_token, http_client=proxy_client)  # For PythonAnywhere hosting
     client = Client(account_sid, auth_token)
 
-    message = client.messages \
-        .create(
+    message = client.messages.create(
         body="You need an umbrella today! ☂️",
         from_=FROM_NUM,
         to=TO_NUM
