@@ -20,51 +20,39 @@ ntx_headers = {
     "x-remote-user-id": "0"
 }
 
-# excercise_input = input("What did you do today, guy?")
+excercise_input = input("What exercises did you do today?")
 
 ntx_params = {
-    "query": "did 60 pushups and ran 3 miles",
+    "query": excercise_input,
     "gender": "male",
     "weight_kg": 70,
     "height_cm": 185.5,
     "age": 30
 }
 
-# response = requests.post(url=ntx_endpoint, headers=ntx_headers, json=ntx_params)
-# # print(response)
-# ntx_result = response.json()
-# # print(ntx_result["exercises"])
-#
-# # Need: Date, Time, Exercise ('name'), Duration('duration_min'), Calories ('nf_calories')
-#
-# # print(ntx_result["exercises"][0])
-#
-# sheety_post_endpoint = "https://api.sheety.co/0a8227d1804e13b5bb2ff73b32ea070d/workoutTracking/workouts"
-#
-# sheety_headers = {
-#     "Authorization": SHEETY_AUTH
-# }
-#
-# # for result in ntx_result["exercises"]:
-# #     print(result["name"])
-# #     print(result["duration_min"])
-# #     print(result["nf_calories"])
-#
-# sheety_test_json = {
-#     "workout": {
-#         "date": "12/9/2021",
-#         "time": "21:00",
-#         "exercise": "push-up",
-#         "duration": "3",
-#         "calories": "13.43"
-#     }
-# }
-#
-# sheety_response = requests.post(url=sheety_post_endpoint, headers=sheety_headers, json=sheety_test_json)
-# print(sheety_response)
+response = requests.post(url=ntx_endpoint, headers=ntx_headers, json=ntx_params)
+ntx_result = response.json()
 
+sheety_post_endpoint = "https://api.sheety.co/0a8227d1804e13b5bb2ff73b32ea070d/workoutTracking/workouts"
 
+sheety_headers = {
+    "Authorization": SHEETY_AUTH
+}
 
 today = datetime.now()
-print(today.strftime("%Y%m%d"))
+
+for result in ntx_result["exercises"]:
+    sheety_json = {
+        "workout": {
+            "date": today.strftime("%d/%m/%Y"),
+            "time": today.strftime("%H:%M:%S"),
+            "exercise": result["name"].title(),
+            "duration": result["duration_min"],
+            "calories": result["nf_calories"]
+        }
+    }
+    sheety_response = requests.post(url=sheety_post_endpoint, headers=sheety_headers, json=sheety_json)
+    print(sheety_response)
+
+
 
