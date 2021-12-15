@@ -18,10 +18,12 @@ class DataManager:
         self.sheety_headers = {
             "Authorization": SHEETY_AUTH
         }
+        self.sheet_data = {}
 
     def get_sheet_data(self):
         response = requests.get(url=self.sheety_get_endpoint, headers=self.sheety_headers)
         response.raise_for_status()
+        self.sheet_data = response.json()["prices"]
         return response.json()["prices"]
 
     def update_sheet_data(self, sheet_data):
@@ -35,8 +37,5 @@ class DataManager:
             }
             response = requests.put(url=f"https://api.sheety.co/0a8227d1804e13b5bb2ff73b32ea070d/flightDeals/prices/{row['id']}",
                                     headers=self.sheety_headers, json=put_data)
-            response = requests.put(
-                url=f"https://api.sheety.co/0a8227d1804e13b5bb2ff73b32ea070d/flightDeals/prices/{row['id']}",
-                headers=self.sheety_headers, json=put_data)
             print(response)
 
