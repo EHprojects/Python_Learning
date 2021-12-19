@@ -1,4 +1,5 @@
 import requests
+import datetime
 from twilio.rest import Client
 from dotenv import load_dotenv
 import os
@@ -30,6 +31,13 @@ class FlightSearch:
 
     def get_flight_data(self, iata_from, iata_to):
         kiwi_search_endpoint = "https://tequila-api.kiwi.com/v2/search"
+
+        # fly_from - iata_from (from sheet_data)
+        # fly_to - iata_to (from sheet_data)
+        # date_from - add one day to current day?
+        # date_to - datetime.timedelta()
+
+
         search_params = {
             "fly_from": "LON",  # Kiwi API ID of the departure location
             "fly_to": "PAR",  # Kiwi api ID of the arrival destination
@@ -44,12 +52,15 @@ class FlightSearch:
         }
         response = requests.get(url=kiwi_search_endpoint, headers=self.kiwi_headers, params=search_params)
         response.raise_for_status()
+        currency = response.json()["currency"]
         price = response.json()["data"][0]["price"]
         depart_iata = response.json()["data"][0]["route"][0]["flyFrom"]
         dest_iata = response.json()["data"][0]["route"][0]["flyTo"]
         depart_city = response.json()["data"][0]["route"][0]["cityFrom"]
         dest_city = response.json()["data"][0]["route"][0]["cityTo"]
         airline = response.json()["data"][0]["route"][0]["airline"]
+        depart_date = response.json()["data"][0]["route"][0]["local_departure"].split("T")[0]
+        return_date = response.json()["data"][0]["route"][1]["local_departure"].split("T")[0]
 
 
 
