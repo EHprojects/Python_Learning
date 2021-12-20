@@ -4,6 +4,7 @@ from data_manager import DataManager
 from flight_search import FlightSearch
 from pprint import pprint
 
+ORIGIN_IATA = "LON"
 
 data_manager = DataManager()
 flight_search = FlightSearch()
@@ -18,4 +19,10 @@ for row in sheet_data:
 
 pprint(sheet_data)
 
-data_manager.update_sheet_data(sheet_data)
+# data_manager.update_sheet_data(sheet_data)
+
+for row in sheet_data:
+    flight = flight_search.get_flight_data(
+        iata_from=ORIGIN_IATA,
+        iata_to=row["iataCode"]
+    )

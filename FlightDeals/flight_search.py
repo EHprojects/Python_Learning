@@ -3,6 +3,7 @@ import datetime
 from twilio.rest import Client
 from dotenv import load_dotenv
 import os
+from flight_data import FlightData
 
 load_dotenv("../.idea/.env")
 
@@ -32,26 +33,30 @@ class FlightSearch:
     def get_flight_data(self, iata_from, iata_to):
         kiwi_search_endpoint = "https://tequila-api.kiwi.com/v2/search"
 
-        # fly_from - iata_from (from sheet_data)
+        # fly_from - iata_from (from main.py)
         # fly_to - iata_to (from sheet_data)
         # date_from - add one day to current day?
         # date_to - datetime.timedelta()
 
+        date_from = (datetime.datetime.now() + datetime.timedelta(days=1)).strftime("%d/%m/%Y")  # tomorrow
+        date_to = (datetime.datetime.now() + datetime.timedelta(days=(6 * 30))).strftime("%d/%m/%Y")  # 6 months
 
         search_params = {
-            "fly_from": "LON",  # Kiwi API ID of the departure location
-            "fly_to": "PAR",  # Kiwi api ID of the arrival destination
+            "fly_from": iata_from,  # Kiwi API ID of the departure location
+            "fly_to": iata_to,  # Kiwi api ID of the arrival destination
             "max_stopovers": 0,  # max number of stopovers per itinerary
-            "date_from": "20/12/2021",  # search flights from this date
-            "date_to": "20/06/2022",  # search flights up to this date
+            "date_from": date_from,  # search flights from this date
+            "date_to": date_to,  # search flights up to this date
             "nights_in_dst_from": 7,  # the minimal length of stay in the destination given in the fly_to parameter
             "nights_in_dst_to": 28,  # the maximal length of stay in the destination given in the fly_to parameter
             "curr": "GBP",  # use this parameter to change the currency in the response
             "sort": "price",  # sorts the results by quality, price, date or duration.
             "limit": 1,  # limit number of results; the default value is 200
         }
+
         response = requests.get(url=kiwi_search_endpoint, headers=self.kiwi_headers, params=search_params)
         response.raise_for_status()
+
         currency = response.json()["currency"]
         price = response.json()["data"][0]["price"]
         depart_iata = response.json()["data"][0]["route"][0]["flyFrom"]
@@ -62,8 +67,20 @@ class FlightSearch:
         depart_date = response.json()["data"][0]["route"][0]["local_departure"].split("T")[0]
         return_date = response.json()["data"][0]["route"][1]["local_departure"].split("T")[0]
 
+        flight_data = FlightData(
+            currency=currency,
+            price=price,
+            depart_iata=depart_iata,
+            dest_iata=dest_iata,
+            depart_city=depart_city,
+            dest_city=dest_city,
+            airline=airline,
+            depart_date=depart_date,
+            return_date=return_date
+        )
 
-
+        print(f"{flight_data.dest_city}: £{price}")
+        return flight_data
 
 
 
