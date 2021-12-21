@@ -1,6 +1,5 @@
 import requests
 import datetime
-from twilio.rest import Client
 from dotenv import load_dotenv
 import os
 from flight_data import FlightData

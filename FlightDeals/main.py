@@ -2,12 +2,14 @@
 
 from data_manager import DataManager
 from flight_search import FlightSearch
+from notification_manager import NotificationManager
 from pprint import pprint
 
 ORIGIN_IATA = "LON"
 
 data_manager = DataManager()
 flight_search = FlightSearch()
+notification_manager = NotificationManager()
 
 sheet_data = data_manager.get_sheet_data()
 # pprint(sheet_data)
@@ -28,5 +30,7 @@ for row in sheet_data:
     )
     if flight.price < row["lowestPrice"]:
         row["lowestPrice"] = flight.price
+        notification_manager.send_notification(flight)
+
 
 data_manager.update_sheet_data(sheet_data)
