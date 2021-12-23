@@ -2,7 +2,7 @@ class FlightData:
     #This class is responsible for structuring the flight data.
 
     def __init__(self, currency, price, depart_iata, dest_iata,
-                 depart_city, dest_city, airline, depart_date, return_date):
+                 depart_city, dest_city, airline, depart_date, return_date, stop_overs=0, via_city=""):
         self.currency = currency
         self.price = price
         self.depart_iata = depart_iata

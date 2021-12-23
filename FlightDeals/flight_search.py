@@ -10,7 +10,7 @@ KIWI_API_KEY = os.getenv("KIWI_API_KEY")
 
 
 class FlightSearch:
-    #This class is responsible for talking to the Flight Search API.
+    # This class is responsible for talking to the Flight Search API.
 
     def __init__(self):
         self.kiwi_headers = {
@@ -28,8 +28,7 @@ class FlightSearch:
         iata_code = response.json()["locations"][0]["code"]
         return iata_code
 
-
-    def get_flight_data(self, iata_from, iata_to):
+    def get_flight_data(self, iata_from, iata_to, max_stops=0):
         kiwi_search_endpoint = "https://tequila-api.kiwi.com/v2/search"
 
         # fly_from - iata_from (from main.py)
@@ -43,7 +42,7 @@ class FlightSearch:
         search_params = {
             "fly_from": iata_from,  # Kiwi API ID of the departure location
             "fly_to": iata_to,  # Kiwi api ID of the arrival destination
-            "max_stopovers": 0,  # max number of stopovers per itinerary
+            "max_stopovers": max_stops,  # max number of stopovers per itinerary
             "date_from": date_from,  # search flights from this date
             "date_to": date_to,  # search flights up to this date
             "nights_in_dst_from": 7,  # the minimal length of stay in the destination given in the fly_to parameter
@@ -60,8 +59,42 @@ class FlightSearch:
             data = response.json()["data"][0]
             print(f"{iata_to}: £{data['price']}")
         except IndexError:
-            print(f"No flights found for {iata_to}.")
-            return None
+            print(f"No direct flights found for {iata_to}.")
+            search_params["max_stopovers"] = 1
+            response = requests.get(url=kiwi_search_endpoint, headers=self.kiwi_headers, params=search_params)
+
+            try:
+                data = response.json()["data"][0]
+                print(f"{iata_to}: £{data['price']}")
+            except IndexError:
+                print(f"No flights found for {iata_to}.")
+                return None
+            else:
+                # Add Stopover Info
+                currency = response.json()["currency"]
+                price = data["price"]
+                depart_iata = data["route"][0]["flyFrom"]
+                dest_iata = data["route"][0]["flyTo"]
+                depart_city = data["route"][0]["cityFrom"]
+                dest_city = data["route"][0]["cityTo"]
+                airline = data["route"][0]["airline"]
+                depart_date = data["route"][0]["local_departure"].split("T")[0]
+                return_date = data["route"][1]["local_departure"].split("T")[0]
+
+                flight_data = FlightData(
+                    currency=currency,
+                    price=price,
+                    depart_iata=depart_iata,
+                    dest_iata=dest_iata,
+                    depart_city=depart_city,
+                    dest_city=dest_city,
+                    airline=airline,
+                    depart_date=depart_date,
+                    return_date=return_date
+                )
+
+                return flight_data
+
         else:
             currency = response.json()["currency"]
             price = data["price"]
