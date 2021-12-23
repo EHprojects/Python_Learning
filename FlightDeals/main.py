@@ -28,6 +28,10 @@ for row in sheet_data:
         iata_from=ORIGIN_IATA,
         iata_to=row["iataCode"]
     )
+
+    if flight is None:
+        continue
+
     if flight.price < row["lowestPrice"]:
         row["lowestPrice"] = flight.price
         notification_manager.send_notification(flight)

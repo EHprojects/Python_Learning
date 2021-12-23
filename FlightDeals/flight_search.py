@@ -56,30 +56,33 @@ class FlightSearch:
         response = requests.get(url=kiwi_search_endpoint, headers=self.kiwi_headers, params=search_params)
         response.raise_for_status()
 
-        currency = response.json()["currency"]
-        price = response.json()["data"][0]["price"]
-        depart_iata = response.json()["data"][0]["route"][0]["flyFrom"]
-        dest_iata = response.json()["data"][0]["route"][0]["flyTo"]
-        depart_city = response.json()["data"][0]["route"][0]["cityFrom"]
-        dest_city = response.json()["data"][0]["route"][0]["cityTo"]
-        airline = response.json()["data"][0]["route"][0]["airline"]
-        depart_date = response.json()["data"][0]["route"][0]["local_departure"].split("T")[0]
-        return_date = response.json()["data"][0]["route"][1]["local_departure"].split("T")[0]
+        try:
+            data = response.json()["data"][0]
+            print(f"{iata_to}: £{data['price']}")
+        except IndexError:
+            print(f"No flights found for {iata_to}.")
+            return None
+        else:
+            currency = response.json()["currency"]
+            price = data["price"]
+            depart_iata = data["route"][0]["flyFrom"]
+            dest_iata = data["route"][0]["flyTo"]
+            depart_city = data["route"][0]["cityFrom"]
+            dest_city = data["route"][0]["cityTo"]
+            airline = data["route"][0]["airline"]
+            depart_date = data["route"][0]["local_departure"].split("T")[0]
+            return_date = data["route"][1]["local_departure"].split("T")[0]
 
-        flight_data = FlightData(
-            currency=currency,
-            price=price,
-            depart_iata=depart_iata,
-            dest_iata=dest_iata,
-            depart_city=depart_city,
-            dest_city=dest_city,
-            airline=airline,
-            depart_date=depart_date,
-            return_date=return_date
-        )
+            flight_data = FlightData(
+                currency=currency,
+                price=price,
+                depart_iata=depart_iata,
+                dest_iata=dest_iata,
+                depart_city=depart_city,
+                dest_city=dest_city,
+                airline=airline,
+                depart_date=depart_date,
+                return_date=return_date
+            )
 
-        print(f"{flight_data.dest_city}: £{price}")
-        return flight_data
-
-
-
+            return flight_data
