@@ -34,7 +34,8 @@ for row in sheet_data:
 
     if flight.price < row["lowestPrice"]:
         row["lowestPrice"] = flight.price
-        notification_manager.send_notification(flight)
+        notification_manager.send_sms(flight)
+        notification_manager.send_email(flight)
 
 
-data_manager.update_sheet_data(sheet_data)
+# data_manager.update_sheet_data(sheet_data)
