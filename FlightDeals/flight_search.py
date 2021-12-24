@@ -60,7 +60,7 @@ class FlightSearch:
             print(f"{iata_to}: £{data['price']}")
         except IndexError:
             print(f"No direct flights found for {iata_to}.")
-            search_params["max_stopovers"] = 1
+            search_params["max_stopovers"] = 2
             response = requests.get(url=kiwi_search_endpoint, headers=self.kiwi_headers, params=search_params)
 
             try:
@@ -70,7 +70,6 @@ class FlightSearch:
                 print(f"No flights found for {iata_to}.")
                 return None
             else:
-                # Add Stopover Info
                 currency = response.json()["currency"]
                 price = data["price"]
                 depart_iata = data["route"][0]["flyFrom"]
@@ -80,6 +79,8 @@ class FlightSearch:
                 airline = data["route"][0]["airline"]
                 depart_date = data["route"][0]["local_departure"].split("T")[0]
                 return_date = data["route"][1]["local_departure"].split("T")[0]
+                stop_iata = data["route"][0]["flyTo"]
+                stops = search_params["max_stopovers"]
 
                 flight_data = FlightData(
                     currency=currency,
@@ -90,7 +91,9 @@ class FlightSearch:
                     dest_city=dest_city,
                     airline=airline,
                     depart_date=depart_date,
-                    return_date=return_date
+                    return_date=return_date,
+                    stop_overs=stops,
+                    via_city=stop_iata
                 )
 
                 return flight_data

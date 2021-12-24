@@ -30,13 +30,7 @@ for row in sheet_data:
     )
 
     if flight is None:
-        flight = flight_search.get_flight_data(
-            iata_from=ORIGIN_IATA,
-            iata_to=row["iataCode"],
-            max_stops=1
-        )
-        if flight is None:
-            pass
+        continue
 
     if flight.price < row["lowestPrice"]:
         row["lowestPrice"] = flight.price

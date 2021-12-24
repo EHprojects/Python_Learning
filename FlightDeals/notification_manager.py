@@ -18,6 +18,15 @@ class NotificationManager:
     def send_notification(self, flight):
         client = Client(TWIL_ACCT_ID, TWIL_AUTH_TOK)
 
+        if flight.stop_overs > 1:
+            message = client.messages.create(
+                body=f"Low price alert! Only £{flight.price} to fly from {flight.depart_city}-{flight.depart_iata} to "
+                     f"{flight.dest_city}-{flight.dest_iata}, from {flight.depart_date} to {flight.return_date}."
+                     f"\nFlight has 1 stop over, via {flight.via_city}",
+                from_=TWIL_FROM_NUM,
+                to=TWIL_TO_NUM
+            )
+
         message = client.messages.create(
             body=f"Low price alert! Only £{flight.price} to fly from {flight.depart_city}-{flight.depart_iata} to "
                  f"{flight.dest_city}-{flight.dest_iata}, from {flight.depart_date} to {flight.return_date}.",
